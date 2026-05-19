@@ -10,20 +10,30 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#1a1a2e"
     },
     "ios": {
-      "supportsTablet": true
-    },
+  "supportsTablet": true,
+  "bundleIdentifier": "com.autohub.app",
+  "infoPlist": {
+    "NSLocationWhenInUseUsageDescription": "AutoHub folosește locația ta pentru a găsi garaje în apropiere."
+  }
+},
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#1a1a2e"
       },
       "edgeToEdgeEnabled": true
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "40d6af54-ebfb-4e53-98b9-a34c07541dfa"
+      }
+    },
+    "owner": "runtfb"
   }
 }
