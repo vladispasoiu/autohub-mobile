@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, SafeAreaView, ImageBackground, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, SafeAreaView, ImageBackground } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
@@ -26,14 +26,40 @@ export default function HomeScreen({ navigation }) {
     };
     getLocation();
   }, []);
-  
+
+  const handleSearch = () => {
+    if (search.trim().length > 0) {
+      navigation.navigate('Garaje', { filter: search.trim() });
+      setSearch('');
+    }
+  };
+
+  const CATEGORIES = [
+    { label: 'Diagnoză motor', icon: '🔧' },
+    { label: 'Schimb ulei', icon: '🛢️' },
+    { label: 'Reparații frâne', icon: '🛑' },
+    { label: 'Service AC', icon: '❄️' },
+    { label: 'Inspecție Tehnică Periodică', icon: '📋' },
+    { label: 'Schimb anvelope', icon: '🔄' },
+    { label: 'Geometrie roți', icon: '⚙️' },
+    { label: 'Testare baterie', icon: '🔋' },
+    { label: 'Suspensie', icon: '🚗' },
+    { label: 'Transmisie', icon: '⚡' },
+    { label: 'Diagnoză electrică', icon: '💡' },
+    { label: 'Sistem evacuare', icon: '💨' },
+    { label: 'Radiator', icon: '🌡️' },
+    { label: 'Curea distribuție', icon: '🔩' },
+    { label: 'Ambreiaj', icon: '🔁' },
+    
+  ];
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
 
       <ImageBackground source={require('../assets/homebanner.png')} style={styles.header} resizeMode="cover">
         <View style={styles.headerOverlay}>
-        <View style={styles.locationBadge}>
+          <View style={styles.locationBadge}>
             <Ionicons name="location" size={12} color="#fff" />
             <Text style={styles.locationText}>{city}</Text>
           </View>
@@ -45,6 +71,8 @@ export default function HomeScreen({ navigation }) {
               placeholderTextColor="#999"
               value={search}
               onChangeText={setSearch}
+              onSubmitEditing={handleSearch}
+              returnKeyType="search"
             />
             {search.length > 0 && (
               <TouchableOpacity onPress={() => setSearch('')}>
@@ -58,24 +86,12 @@ export default function HomeScreen({ navigation }) {
       <ScrollView style={styles.list} showsVerticalScrollIndicator={false}>
         <Text style={styles.categoriesTitle}>Servicii auto</Text>
         <View style={styles.categoriesGrid}>
-          {[
-            { label: 'Diagnoză motor', icon: '🔧' },
-            { label: 'Schimb ulei', icon: '🛢️' },
-            { label: 'Reparații frâne', icon: '🛑' },
-            { label: 'Service AC', icon: '❄️' },
-            { label: 'Schimb anvelope', icon: '🔄' },
-            { label: 'Geometrie roți', icon: '⚙️' },
-            { label: 'Testare baterie', icon: '🔋' },
-            { label: 'Suspensie', icon: '🚗' },
-            { label: 'Transmisie', icon: '⚡' },
-            { label: 'Diagnoză electrică', icon: '💡' },
-            { label: 'Sistem evacuare', icon: '💨' },
-            { label: 'Radiator', icon: '🌡️' },
-            { label: 'Curea distribuție', icon: '🔩' },
-            { label: 'Ambreiaj', icon: '🔁' },
-            { label: 'Întreținere periodică', icon: '📋' },
-          ].map((cat, i) => (
-            <TouchableOpacity key={i} style={styles.categoryChip}>
+          {CATEGORIES.map((cat, i) => (
+            <TouchableOpacity
+              key={i}
+              style={styles.categoryChip}
+              onPress={() => navigation.navigate('Garaje', { filter: cat.label })}
+            >
               <Text style={styles.categoryIcon}>{cat.icon}</Text>
               <Text style={styles.categoryLabel}>{cat.label}</Text>
             </TouchableOpacity>

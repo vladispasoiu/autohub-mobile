@@ -13,12 +13,12 @@
       "backgroundColor": "#1a1a2e"
     },
     "ios": {
-  "supportsTablet": true,
-  "bundleIdentifier": "com.autohub.app",
-  "infoPlist": {
-    "NSLocationWhenInUseUsageDescription": "AutoHub folosește locația ta pentru a găsi garaje în apropiere."
-  }
-},
+      "supportsTablet": true,
+      "bundleIdentifier": "com.autohub.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "AutoHub folosește locația ta pentru a găsi garaje în apropiere."
+      }
+    },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -34,6 +34,9 @@
         "projectId": "40d6af54-ebfb-4e53-98b9-a34c07541dfa"
       }
     },
-    "owner": "runtfb"
+    "owner": "runtfb",
+    "plugins": [
+      "expo-web-browser"
+    ]
   }
 }

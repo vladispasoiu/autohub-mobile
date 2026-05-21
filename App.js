@@ -12,6 +12,7 @@ import BookingScreen from './screens/BookingScreen';
 import AuthScreen from './screens/AuthScreen';
 import * as Notifications from 'expo-notifications';
 import GaragesScreen from './screens/GaragesScreen';
+import BookingDetailScreen from './screens/BookingDetailScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -33,23 +34,21 @@ function HomeTabs({ user, onLogout }) {
         tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
         tabBarIcon: ({ focused, color }) => {
           const icons = {
-            Home: focused ? 'home' : 'home-outline',
-            Search: focused ? 'search' : 'search-outline',
-            Garages: focused ? 'car' : 'car-outline',
-            Bookings: focused ? 'calendar' : 'calendar-outline',
-            Profile: focused ? 'person' : 'person-outline',
+            Acasă: focused ? 'home' : 'home-outline',
+            Garaje: focused ? 'car' : 'car-outline',
+            Programări: focused ? 'calendar' : 'calendar-outline',
+            Profil: focused ? 'person' : 'person-outline',
           };
           return <Ionicons name={icons[route.name]} size={22} color={color} />;
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Garages" component={GaragesScreen} />
-      <Tab.Screen name="Search" component={SearchScreen} />
-      <Tab.Screen name="Bookings">
-        {() => <BookingsScreen user={user} />}
+      <Tab.Screen name="Acasă" component={HomeScreen} />
+      <Tab.Screen name="Garaje" component={GaragesScreen} />
+      <Tab.Screen name="Programări">
+      {(props) => <BookingsScreen {...props} user={user} />}
       </Tab.Screen>
-      <Tab.Screen name="Profile">
+      <Tab.Screen name="Profil">
         {() => <ProfileScreen user={user} onLogout={onLogout} />}
       </Tab.Screen>
     </Tab.Navigator>
@@ -81,7 +80,14 @@ export default function App() {
         projectId: '40d6af54-ebfb-4e53-98b9-a34c07541dfa'
       });
       console.log('Push token:', token.data);
-      Alert.alert('Push Token', token.data);
+      const pushToken = token.data;
+      console.log('Push token:', pushToken);
+      if (user?.id) {
+        await fetch(
+          `https://web-production-72bd.up.railway.app/users/${user.id}/push-token?push_token=${encodeURIComponent(pushToken)}`,
+          { method: 'POST' }
+        );
+      }
     } catch (e) {
       Alert.alert('Error', e.message);
     }
@@ -102,6 +108,7 @@ export default function App() {
           {() => <HomeTabs user={user} onLogout={handleLogout} />}
         </Stack.Screen>
         <Stack.Screen name="GarageDetail" component={GarageDetailScreen} />
+        <Stack.Screen name="BookingDetail" component={BookingDetailScreen} />
         <Stack.Screen name="Booking">
            {(props) => <BookingScreen {...props} user={user} />}
          </Stack.Screen>

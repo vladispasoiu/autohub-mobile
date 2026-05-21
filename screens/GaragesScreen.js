@@ -3,13 +3,13 @@ import { StyleSheet, Text, View, TouchableOpacity, ScrollView, SafeAreaView, Act
 import { Ionicons } from '@expo/vector-icons';
 import { getGarages } from '../api';
 
-export default function GaragesScreen({ navigation }) {
+export default function GaragesScreen({ navigation, route }) {
   const [garages, setGarages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const fetchGarages = async () => {
-    const data = await getGarages('Bucharest', null);
+  const fetchGarages = async (searchTerm = '') => {
+    const data = await getGarages('Bucharest', searchTerm || null);
     if (data.length === 0) {
       setGarages([
         { id: 1, name: 'Service Auto Vlad', city: 'Bucharest', address: 'Str. Mihai Eminescu 12', rating: 4.8, total_reviews: 124, phone: '0722123456', price_from: 50 },
@@ -22,7 +22,10 @@ export default function GaragesScreen({ navigation }) {
     setRefreshing(false);
   };
 
-  useEffect(() => { fetchGarages(); }, []);
+  useEffect(() => {
+    const filter = route.params?.filter || '';
+    fetchGarages(filter);
+  }, [route.params?.filter]);
 
   const onRefresh = () => { setRefreshing(true); fetchGarages(); };
 
