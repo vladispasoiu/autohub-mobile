@@ -13,11 +13,13 @@ import AuthScreen from './screens/AuthScreen';
 import * as Notifications from 'expo-notifications';
 import GaragesScreen from './screens/GaragesScreen';
 import BookingDetailScreen from './screens/BookingDetailScreen';
+import OnboardingScreen from './screens/OnboardingScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-function HomeTabs({ user, onLogout }) {
+
+function HomeTabs({ user, token, onLogout }) {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -49,7 +51,7 @@ function HomeTabs({ user, onLogout }) {
       {(props) => <BookingsScreen {...props} user={user} />}
       </Tab.Screen>
       <Tab.Screen name="Profil">
-        {() => <ProfileScreen user={user} onLogout={onLogout} />}
+        {() => <ProfileScreen user={user} token={token} onLogout={onLogout} />}
       </Tab.Screen>
     </Tab.Navigator>
   );
@@ -58,6 +60,7 @@ function HomeTabs({ user, onLogout }) {
 export default function App() {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
+  const [showOnboarding, setShowOnboarding] = useState(true);
 
   const handleLogin = (userData, accessToken) => {
     setUser(userData);
@@ -97,6 +100,10 @@ export default function App() {
     if (user) registerForPushNotifications();
   }, [user]);
 
+  if (showOnboarding) {
+    return <OnboardingScreen onDone={() => setShowOnboarding(false)} />;
+  }
+
   if (!user) {
     return <AuthScreen onLogin={handleLogin} />;
   }
@@ -104,9 +111,9 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Main">
-          {() => <HomeTabs user={user} onLogout={handleLogout} />}
-        </Stack.Screen>
+      <Stack.Screen name="Main">
+         {() => <HomeTabs user={user} token={token} onLogout={handleLogout} />}
+     </Stack.Screen>
         <Stack.Screen name="GarageDetail" component={GarageDetailScreen} />
         <Stack.Screen name="BookingDetail" component={BookingDetailScreen} />
         <Stack.Screen name="Booking">

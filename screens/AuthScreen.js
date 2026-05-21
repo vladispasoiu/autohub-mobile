@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView, KeyboardAvoidingView, Platform, Alert, Image, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView, KeyboardAvoidingView, Platform, Alert, Image, ActivityIndicator, Switch } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import * as WebBrowser from 'expo-web-browser';
@@ -12,6 +12,8 @@ const API_URL = 'https://web-production-72bd.up.railway.app';
 export default function AuthScreen({ onLogin }) {
   const [mode, setMode] = useState('login');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [form, setForm] = useState({
     full_name: '', email: '', phone: '', password: ''
   });
@@ -42,6 +44,26 @@ export default function AuthScreen({ onLogin }) {
   };
 
   const update = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
+
+  const handleForgotPassword = () => {
+    Alert.alert(
+      'Resetare parolă',
+      'Trimitem un email cu instrucțiuni de resetare a parolei.',
+      [
+        { text: 'Anulează', style: 'cancel' },
+        {
+          text: 'Trimite',
+          onPress: () => {
+            if (!form.email) {
+              Alert.alert('Atenție', 'Introdu mai întâi adresa de email.');
+            } else {
+              Alert.alert('Email trimis!', `Verifică inbox-ul la ${form.email}.`);
+            }
+          }
+        },
+      ]
+    );
+  };
 
   const handleSubmit = async () => {
     if (!form.email || !form.password) {
@@ -134,11 +156,33 @@ export default function AuthScreen({ onLogin }) {
               style={styles.input}
               placeholder="Parolă"
               placeholderTextColor="#aaa"
-              secureTextEntry
+              secureTextEntry={!showPassword}
               value={form.password}
               onChangeText={v => update('password', v)}
             />
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
+              <Ionicons name={showPassword ? 'eye-outline' : 'eye-off-outline'} size={20} color="#aaa" />
+            </TouchableOpacity>
           </View>
+
+          {/* Ține-mă minte + Ai uitat parola — doar pe login */}
+          {mode === 'login' && (
+            <View style={styles.rowBetween}>
+              <View style={styles.rememberRow}>
+                <Switch
+                  value={rememberMe}
+                  onValueChange={setRememberMe}
+                  trackColor={{ false: '#ffffff22', true: '#ffffff' }}
+                  thumbColor={rememberMe ? '#e63946' : '#aaa'}
+                  style={{ transform: [{ scaleX: 0.85 }, { scaleY: 0.85 }] }}
+                />
+                <Text style={styles.rememberText}>Ține-mă minte</Text>
+              </View>
+              <TouchableOpacity onPress={handleForgotPassword}>
+                <Text style={styles.forgotText}>Ai uitat parola?</Text>
+              </TouchableOpacity>
+            </View>
+          )}
 
           <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit} disabled={loading}>
             {loading
@@ -149,7 +193,7 @@ export default function AuthScreen({ onLogin }) {
 
           <View style={styles.divider}>
             <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>sau</Text>
+            <Text style={styles.dividerText}>sau continuă cu</Text>
             <View style={styles.dividerLine} />
           </View>
 
@@ -159,16 +203,14 @@ export default function AuthScreen({ onLogin }) {
             disabled={!request}
           >
             <Image source={{ uri: 'https://www.google.com/favicon.ico' }} style={{ width: 20, height: 20, marginRight: 10 }} />
-            <Text style={styles.googleBtnText}>Continuă cu Google</Text>
+            <Text style={styles.googleBtnText}>Google</Text>
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.footerText}>
-          {mode === 'login' ? 'Nu ai cont? ' : 'Ai deja cont? '}
-          <Text style={styles.footerLink} onPress={() => setMode(mode === 'login' ? 'register' : 'login')}>
-            {mode === 'login' ? 'Înregistrează-te' : 'Intră în cont'}
-          </Text>
-        </Text>
+        <TouchableOpacity style={styles.appleBtn} disabled>
+         <Ionicons name="logo-apple" size={20} color="#1a1a2e" style={{ marginRight: 10 }} />
+         <Text style={styles.appleBtnText}>Apple</Text>
+        </TouchableOpacity>
 
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -177,7 +219,9 @@ export default function AuthScreen({ onLogin }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#1a1a2e' },
-  inner: { flex: 1, padding: 25, justifyContent: 'center' },
+  inner: { flex: 1, padding: 25, justifyContent: 'center', marginTop: -30 },
+  appleBtn: { backgroundColor: '#fff', borderRadius: 14, paddingVertical: 14, alignItems: 'center', borderWidth: 1, borderColor: '#ddd', flexDirection: 'row', justifyContent: 'center', marginTop: -6 },
+  appleBtnText: { color: '#1a1a1a', fontWeight: '700', fontSize: 15 },
   logoSection: { alignItems: 'center', marginBottom: 40 },
   logoImage: { width: 400, height: 170, marginBottom: 15 },
   appName: { color: '#fff', fontSize: 40, fontWeight: '600' },
@@ -191,6 +235,11 @@ const styles = StyleSheet.create({
   inputRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#ffffff15', borderRadius: 14, paddingHorizontal: 14, paddingVertical: 14 },
   inputIcon: { marginRight: 20 },
   input: { flex: 1, color: '#fff', fontSize: 15 },
+  eyeBtn: { padding: 4 },
+  rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: -4 },
+  rememberRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  rememberText: { color: '#aaa', fontSize: 13 },
+  forgotText: { color: '#e63946', fontSize: 13, fontWeight: '600' },
   submitBtn: { backgroundColor: '#fff', borderRadius: 14, paddingVertical: 16, alignItems: 'center' },
   submitText: { color: '#1a1a2e', fontWeight: '800', fontSize: 16 },
   divider: { flexDirection: 'row', alignItems: 'center' },
